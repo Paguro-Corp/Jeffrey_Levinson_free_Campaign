@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jeffrey Levinson, Three Evenings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+
+/* Layout: a dark evening editorial. Full-bleed hero with the clutch as a live object, then one chapter per campaign, each a static plate beside its story and a swipeable carousel strip. Single deliberate dark look. */
+:root{
+  --ink:#10151f;          /* night, the page */
+  --ink-2:#171d2a;        /* raised plates */
+  --line:#2a3242;         /* hairlines */
+  --stone:#e8e4dc;        /* limestone text */
+  --stone-dim:#a7a49d;    /* secondary text */
+  --malbec:#6e1a2b;
+  --red:#b3121c;
+  --chrome:#8c9097;
+  --gold:#c9a45c;         /* accent, used sparingly */
+  --display:"Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --body:"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--stone);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{padding-inline:clamp(16px,5vw,72px);max-width:1360px;margin-inline:auto}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;letter-spacing:-0.01em}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--stone-dim)}
+.mono{font-family:var(--mono)}
+
+/* top bar */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.bar .mark{font-family:var(--display);font-size:20px;letter-spacing:.04em;text-transform:uppercase}
+.bar nav{display:flex;gap:22px;flex-wrap:wrap}
+.bar nav a{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone-dim);text-decoration:none}
+.bar nav a:hover,.bar nav a:focus-visible{color:var(--stone)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,4vw,64px);align-items:center;padding-block:clamp(32px,6vw,72px) clamp(24px,4vw,48px)}
+.hero h1{font-size:clamp(40px,5.6vw,86px);line-height:1}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero .lede{margin-top:24px;max-width:46ch;color:var(--stone-dim);font-size:18px}
+.hero .lede strong{color:var(--stone);font-weight:500}
+.stage{position:relative;aspect-ratio:5/4;max-width:100%;border-radius:2px;background:radial-gradient(120% 90% at 50% 40%,#232b3b 0%,var(--ink) 70%);overflow:hidden;touch-action:pan-y;cursor:grab}
+.stage:active{cursor:grabbing}
+.stage canvas{display:block;width:100%;height:100%}
+.stage .hint{position:absolute;left:18px;bottom:16px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim);pointer-events:none}
+.stage .fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--stone-dim);font-family:var(--mono);font-size:12px}
+.finishes{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.finish{display:flex;align-items:center;gap:10px;background:transparent;border:1px solid var(--line);color:var(--stone-dim);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:10px 14px;border-radius:999px;cursor:pointer}
+.finish .sw{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.finish[aria-pressed="true"]{border-color:var(--stone);color:var(--stone)}
+.finish:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.spec{margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--stone-dim);letter-spacing:.06em}
+
+/* sections */
+section{padding-block:clamp(48px,8vw,104px);border-top:1px solid var(--line)}
+.sec-head{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:clamp(20px,4vw,64px);align-items:end;margin-bottom:clamp(28px,4vw,48px)}
+.sec-head h2{font-size:clamp(34px,5vw,64px);line-height:1.02}
+.sec-head p{color:var(--stone-dim);max-width:62ch;font-size:17px}
+
+/* today */
+.today{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.today div{background:var(--ink);padding:24px}
+.today .n{font-family:var(--display);font-size:clamp(36px,4vw,54px);line-height:1;font-variant-numeric:tabular-nums}
+.today .l{margin-top:10px;color:var(--stone-dim);font-size:14px}
+.today-notes{margin-top:28px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.today-notes p{color:var(--stone-dim);max-width:60ch}
+.today-notes strong{color:var(--stone);font-weight:500}
+
+/* index */
+.index{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.idx{display:block;text-decoration:none;border-top:2px solid var(--c);padding-top:18px}
+.idx .k{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim)}
+.idx h3{font-size:clamp(26px,2.6vw,36px);margin-top:10px}
+.idx p{margin-top:10px;color:var(--stone-dim);font-size:15px;max-width:40ch}
+.idx:hover h3,.idx:focus-visible h3{font-style:italic}
+
+/* campaign chapter */
+.chapter{--c:var(--gold)}
+.ch-top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:clamp(24px,4vw,44px)}
+.ch-top h2{font-size:clamp(40px,6vw,84px);line-height:1}
+.ch-top h2 em{font-style:italic}
+.ch-top .prod{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone-dim)}
+.ch-top .prod i{width:12px;height:12px;border-radius:50%;background:var(--c);display:inline-block}
+.ch-body{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(24px,4vw,64px);align-items:start}
+.plate{margin:0}
+.plate img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--ink-2)}
+.plate figcaption{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--stone-dim);letter-spacing:.06em}
+.story{display:grid;gap:26px}
+.story .idea{font-family:var(--display);font-size:clamp(22px,2.2vw,30px);line-height:1.3}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.facts div{background:var(--ink);padding:14px 16px;min-width:0}
+.facts dt{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim)}
+.facts dd{margin:6px 0 0;font-size:15px}
+.kw{display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.14em;border:1px solid var(--c);padding:2px 8px;border-radius:999px}
+.why h4{margin:0 0 8px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim);font-weight:400}
+.why ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.why li{padding-left:20px;position:relative;max-width:62ch}
+.why li::before{content:"";position:absolute;left:0;top:.72em;width:10px;height:1px;background:var(--c)}
+
+/* carousel strip */
+.strip-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-top:clamp(36px,5vw,56px);margin-bottom:16px}
+.strip-head h3{font-size:clamp(24px,2.4vw,32px)}
+.strip-head h3 em{font-style:italic}
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,calc((100% - 3*16px)/4));gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-color:var(--line) transparent}
+.strip figure{margin:0;scroll-snap-align:start}
+.strip img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--ink-2)}
+.strip figcaption{margin-top:10px;font-size:14px;color:var(--stone-dim)}
+.strip figcaption b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--stone);font-weight:400;margin-bottom:2px}
+
+/* placeholders (campaign 2) */
+.ph{aspect-ratio:4/5;border:1px dashed #4a5263;display:grid;place-items:center;text-align:center;padding:18px;background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(179,18,28,.06) 14px 15px)}
+.ph span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim)}
+.ph p{margin-top:8px;font-size:14px;color:var(--stone-dim);max-width:24ch}
+.status{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:3px 10px;border-radius:999px}
+
+/* comparison */
+.compare{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:1px solid var(--line)}
+.compare .h{padding:16px 20px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim);border-bottom:1px solid var(--line)}
+.compare .h + .h, .compare .r + .r{border-left:1px solid var(--line)}
+.compare .r{padding:18px 20px;border-bottom:1px solid var(--line);min-width:0}
+.compare .r:nth-last-child(-n+2){border-bottom:0}
+.compare .r.new{font-family:var(--display);font-size:19px;line-height:1.35}
+.compare .r.old{color:var(--stone-dim)}
+
+/* next */
+.next{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.next .step .k{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--gold)}
+.next .step h3{font-size:26px;margin-top:8px}
+.next .step p{margin-top:8px;color:var(--stone-dim);max-width:40ch}
+.contact{margin-top:clamp(36px,5vw,56px);display:flex;gap:28px;flex-wrap:wrap;align-items:baseline;border-top:1px solid var(--line);padding-top:24px}
+.contact .who{font-family:var(--display);font-size:26px}
+.contact .line{font-family:var(--mono);font-size:14px;user-select:all}
+.contact a{color:var(--stone);text-underline-offset:3px}
+footer{padding-block:32px;color:var(--stone-dim);font-family:var(--mono);font-size:12px;letter-spacing:.06em;border-top:1px solid var(--line)}
+
+@media (max-width:900px){
+  .hero,.sec-head,.ch-body,.today-notes{grid-template-columns:minmax(0,1fr)}
+  .hero .stage{order:-1}
+  .index,.next{grid-template-columns:minmax(0,1fr)}
+  .strip{grid-auto-columns:72%}
+}
+@media (max-width:560px){
+  .today{grid-template-columns:minmax(0,1fr)}
+  .facts{grid-template-columns:minmax(0,1fr)}
+  .compare{grid-template-columns:minmax(0,1fr)}
+  .compare .h + .h, .compare .r + .r{border-left:0}
+  .compare .h:nth-child(2){display:none}
+  .compare .r.old::before{content:"Today: ";color:var(--stone)}
+  .compare .r.new{border-bottom:1px solid var(--line)}
+  .bar nav{display:none}
+}
+
+/* channels */
+.ico{width:18px;height:18px;flex:none;display:inline-block;vertical-align:-3px}
+.chips{display:inline-flex;gap:8px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);border:1px solid var(--line);border-radius:999px;padding:4px 10px 4px 8px}
+.chip .ico{width:14px;height:14px;vertical-align:0}
+.channels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:clamp(28px,4vw,44px)}
+.channel{border:1px solid var(--line);padding:22px;display:grid;gap:14px;min-width:0;align-content:start}
+.channel .t{display:flex;align-items:center;gap:12px}
+.channel .t .ico{width:28px;height:28px}
+.channel h3{font-size:26px}
+.channel ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.channel li{display:grid;grid-template-columns:minmax(0,9ch) minmax(0,1fr);gap:14px;font-size:15px;color:var(--stone-dim)}
+.channel li b{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);font-weight:400;padding-top:3px}
+.runs{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.runs .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim)}
+.plate figcaption{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+@media (max-width:700px){.channels{grid-template-columns:minmax(0,1fr)}}
+
+/* invitation */
+.inv-h2{font-size:clamp(22px,2.6vw,34px);margin-top:20px;color:var(--stone-dim);font-weight:400}
+.hero-sub{font-family:var(--mono);font-size:clamp(12px,1.1vw,14px);letter-spacing:.16em;text-transform:uppercase;color:var(--stone-dim);margin-bottom:18px}
+.invite .inv-h{font-family:var(--display);font-weight:400;font-size:clamp(40px,6vw,88px);line-height:1.02;max-width:16ch;margin:0}
+.invite .inv-h em{font-style:italic;color:var(--gold)}
+.inv-body{margin-top:clamp(24px,3vw,36px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.inv-body p{color:var(--stone-dim);font-size:18px;max-width:52ch}
+.inv-cta{margin-top:clamp(32px,4vw,48px);display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px;border:1px solid var(--gold);padding:24px 28px}
+.inv-cta .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim)}
+.inv-cta .mail{font-family:var(--display);font-size:clamp(24px,3.4vw,44px);user-select:all;overflow-wrap:anywhere;min-width:0}
+.copy{margin-left:auto;background:var(--gold);color:var(--ink);border:0;border-radius:999px;padding:12px 20px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.copy:focus-visible{outline:2px solid var(--stone);outline-offset:3px}
+.sign{margin-top:28px;font-family:var(--display);font-style:italic;font-size:22px;color:var(--stone-dim)}
+.sign span{font-style:normal;color:var(--stone)}
+@media (max-width:700px){.inv-body{grid-template-columns:minmax(0,1fr)}.copy{margin-left:0}}
+
+.files-btn{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--stone);color:var(--stone);text-decoration:none;border-radius:999px;padding:12px 20px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.files-btn:hover,.files-btn:focus-visible{background:var(--stone);color:var(--ink)}
+.files-btn .ico{width:18px;height:18px}
+.files-row{margin-top:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.files-row .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone-dim)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.4" cy="6.6" r="1.25" fill="currentColor"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13.2 21.5v-7h2.4l.4-2.8h-2.8V9.9c0-.8.3-1.4 1.4-1.4h1.5V6a19 19 0 0 0-2.2-.1c-2.2 0-3.6 1.3-3.6 3.7v2.1H7.9v2.8h2.4v7" fill="currentColor"/></symbol>
+</svg>
+<div class="wrap">
+  <header class="bar">
+    <div class="mark">Jeffrey Levinson</div>
+    <nav aria-label="Sections">
+      <a href="#today">Today</a>
+      <a href="#c1">Still Reachable</a>
+      <a href="#c2">Her Evenings</a>
+      <a href="#c3">No Time to Change</a>
+      <a href="#why">Why</a>
+      <a href="https://drive.google.com/drive/folders/1Kp8gKnI-4NDfxycSucCrfr0yBT3_iS-y" target="_blank" rel="noopener">Files</a>
+      <a href="#next">Meet us</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h2 class="hero-sub">Social media campaign proposal by Danna Olarte</h2>
+      <h1>Three evenings. <em>One woman.</em> Three clutches.</h1>
+      <p class="lede">Three short campaigns for Instagram, each one week long. The same woman carries a different Jeffrey Levinson clutch through a different evening. <strong>Turn the clutch to see it from every side.</strong></p>
+    </div>
+    <div>
+      <div class="stage" id="stage" aria-label="Interactive 3D clutch. Drag to rotate.">
+        <noscript><div class="fallback">Enable JavaScript to turn the clutch.</div></noscript>
+        <span class="hint">Drag to turn</span>
+      </div>
+      <div class="finishes" role="group" aria-label="Choose a finish">
+        <button class="finish" type="button" id="f-malbec" data-k="malbec" aria-pressed="true"><span class="sw" style="background:#6e1a2b"></span>Malbec</button>
+        <button class="finish" type="button" id="f-red" data-k="red" aria-pressed="false"><span class="sw" style="background:#b3121c"></span>Touring Red</button>
+        <button class="finish" type="button" id="f-chrome" data-k="chrome" aria-pressed="false"><span class="sw" style="background:linear-gradient(135deg,#d9dbdf,#55595f)"></span>Mirrored Black Chrome</button>
+      </div>
+      <p class="spec" id="spec">Elina Plus / Malbec lacquer / gold hardware / Campaign 01</p>
+    </div>
+  </div>
+</div>
+
+<section id="today">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">Where the feed is today</p><h2>A beautiful object, waiting for a story.</h2></div>
+      <p>The clutches already look exceptional. What the feed is missing is a reason to come back every week: a woman people recognize, the evenings she goes to, and a simple way to start a conversation with the brand.</p>
+    </div>
+    <div class="today">
+      <div><div class="n">963</div><p class="l">posts on @jeffreylevinson</p></div>
+      <div><div class="n">8,322</div><p class="l">followers</p></div>
+      <div><div class="n">June 11</div><p class="l">date of the most recent post we found</p></div>
+    </div>
+    <div class="today-notes">
+      <p><strong>What the grid shows now.</strong> Product shots, a classic roadster, a retail appearance at Harrods, a performance reel and a few portraits with the clutch. Each post stands alone, so the grid reads as a collection of moments rather than one world.</p>
+      <p><strong>What it does not show yet.</strong> The clutch in use at the events it is made for, the same woman returning week after week, and a clear next step for the follower who wants one. Audit of the public profile, October 2026.</p>
+    </div>
+  </div>
+</section>
+
+<section id="campaigns">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">Three campaigns</p><h2>One woman, three evenings.</h2></div>
+      <p>Each campaign runs for one week: a static image on Monday, a carousel on Wednesday and a short reel on Saturday. Each one belongs to one clutch, one event and one look, so every week feels new while the woman stays the same.</p>
+    </div>
+    <div class="index">
+      <a class="idx" href="#c1" style="--c:var(--malbec)"><span class="k">Campaign 01 / Elina Plus Malbec</span><h3>Still Reachable</h3><p>The end of a long dinner. Everything she needs fits inside, including her phone.</p></a>
+      <a class="idx" href="#c2" style="--c:var(--red)"><span class="k">Campaign 02 / Finley Touring Red</span><h3>Her Evenings</h3><p>A black-tie benefit gala. She arrives, toasts, dances and leaves on her own terms.</p></a>
+      <a class="idx" href="#c3" style="--c:var(--chrome)"><span class="k">Campaign 03 / Elina Plus Mirrored Black Chrome</span><h3>No Time to Change</h3><p>She leaves her studio for the evening as she is. The clutch is the only thing she adds.</p></a>
+    </div>
+
+    <div class="channels" aria-label="Where the campaigns are published">
+      <div class="channel">
+        <div class="t"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg><h3>Instagram</h3></div>
+        <ul>
+          <li><b>Monday</b><span>Static post in the feed, 4:5, the image that stops the scroll.</span></li>
+          <li><b>Wednesday</b><span>Carousel of four slides. Built to be saved and shared.</span></li>
+          <li><b>Saturday</b><span>Reel, 9:16, made from the same scenes, to reach people who do not follow the brand yet.</span></li>
+          <li><b>Every day</b><span>A comment with the keyword opens a private DM through ManyChat, with the piece, the finish and where to buy.</span></li>
+        </ul>
+      </div>
+      <div class="channel">
+        <div class="t"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg><h3>Facebook</h3></div>
+        <ul>
+          <li><b>Same day</b><span>The same static, carousel and Reel, published from Meta Business Suite at the same time as Instagram.</span></li>
+          <li><b>Audience</b><span>Reaches the clients who spend more time on Facebook than on Instagram, often an older, established audience.</span></li>
+          <li><b>Every day</b><span>The same keyword works in Facebook comments and answers in Messenger through ManyChat.</span></li>
+          <li><b>Ads ready</b><span>Every piece is cut in 4:5 and 9:16, so the best performer can be boosted on both platforms without new work.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="files-row"><a class="files-btn" href="https://drive.google.com/drive/folders/1Kp8gKnI-4NDfxycSucCrfr0yBT3_iS-y" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4.6l2 2h8.4A1.5 1.5 0 0 1 21 9.5v8A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Open all campaign files</a><span class="lbl">Every static and carousel slide, ready to download</span></div>
+  </div>
+</section>
+
+<!-- CAMPAIGN 1 -->
+<section class="chapter" id="c1" style="--c:var(--malbec)">
+  <div class="wrap">
+    <div class="ch-top">
+      <h2>Still <em>Reachable</em></h2>
+      <span class="prod"><i></i>Campaign 01 / Elina Plus / Malbec, gold hardware</span>
+    </div>
+    <div class="ch-body">
+      <figure class="plate">
+        <img src="img/c1_static.jpg" alt="She sits in the back seat of a vintage car at night, the Malbec clutch on her lap, looking at the camera.">
+        <figcaption><span>Monday / Static / 4:5 / Comment REACH</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span></figcaption>
+      </figure>
+      <div class="story">
+        <p class="idea">The end of a long dinner. She is leaving, her phone is inside the clutch, and she is still reachable. A rigid clutch that carries a full day without looking like it does.</p>
+        <dl class="facts">
+          <div><dt>Event</dt><dd>A long dinner, after hours</dd></div>
+          <div><dt>Keywords</dt><dd><span class="kw">REACH</span> <span class="kw">FITS</span> <span class="kw">CALL</span></dd></div>
+          <div><dt>Goal</dt><dd>Awareness, then the first DM</dd></div>
+        </dl>
+        <div class="runs"><span class="lbl">Publishes on</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span><span class="lbl">Feed, carousel and Reel, cross-posted the same day</span></div>
+        <div class="why">
+          <h4>Why it works</h4>
+          <ul>
+            <li>It answers the first question every buyer of a hard clutch has: does my phone fit?</li>
+            <li>Flash photography at night feels like a real evening, far from a studio catalogue.</li>
+            <li>The caption asks for one word. ManyChat answers in the DM with the piece, the finish and where to buy.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="strip-head">
+      <h3>Wednesday carousel, <em>What Fits</em></h3>
+      <span class="runs"><span class="lbl">4 slides / swipe / Comment FITS</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span></span>
+    </div>
+    <div class="strip" tabindex="0" aria-label="Campaign 01 carousel">
+      <figure><img src="img/c1_s1.jpg" alt="She sits at a walnut dinner table at the end of the night, the Malbec clutch in front of her." loading="lazy"><figcaption><b>01</b>The table, the end of the night.</figcaption></figure>
+      <figure><img src="img/c1_s2.jpg" alt="Her hand places a white earbuds case into the open Malbec clutch, a wine glass beside it." loading="lazy"><figcaption><b>02</b>Everything goes in, one piece at a time.</figcaption></figure>
+      <figure><img src="img/c1_s3.jpg" alt="The Malbec clutch sharp on the table while she stands up behind it in a camel blazer." loading="lazy"><figcaption><b>03</b>She stands. The clutch stays in focus.</figcaption></figure>
+      <figure><img src="img/c1_s4.jpg" alt="Her thumb presses the gold clasp shut, a candle just blown out behind." loading="lazy"><figcaption><b>04</b>One press of the clasp, and she leaves.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAIGN 2 -->
+<section class="chapter" id="c2" style="--c:var(--red)">
+  <div class="wrap">
+    <div class="ch-top">
+      <h2>Her <em>Evenings</em></h2>
+      <span class="prod"><i></i>Campaign 02 / Finley / Touring Red, silver hardware</span>
+    </div>
+    <div class="ch-body">
+      <figure class="plate">
+        <img src="img/c2_static.jpg" alt="She pauses on the ballroom staircase in an ivory suit, the Touring Red clutch in her hand, guests in emerald, cobalt and champagne below." loading="lazy">
+        <figcaption><span>Monday / Static / 4:5 / Comment OPENING</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span></figcaption>
+      </figure>
+      <div class="story">
+        <p class="idea">A black-tie benefit gala. Guests in emerald, cobalt and champagne. She arrives, raises a glass, dances and leaves when she decides to.</p>
+        <dl class="facts">
+          <div><dt>Event</dt><dd>Benefit gala, black tie</dd></div>
+          <div><dt>Keywords</dt><dd><span class="kw">OPENING</span> <span class="kw">THREE</span> <span class="kw">PADDLE</span></dd></div>
+          <div><dt>Goal</dt><dd>Desire and saves</dd></div>
+        </dl>
+        <div class="runs"><span class="lbl">Publishes on</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span><span class="lbl">Feed, carousel and Reel, cross-posted the same day</span></div>
+        <div class="why">
+          <h4>Why it works</h4>
+          <ul>
+            <li>It places the clutch at the kind of event where it is bought and worn.</li>
+            <li>An ivory suit and a single red object make the product impossible to miss in a crowded feed.</li>
+            <li>She is laughing, toasting and dancing: a woman with a life, not a model holding a bag.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="strip-head">
+      <h3>Wednesday carousel, <em>Three Toasts</em></h3>
+      <span class="runs"><span class="lbl">4 slides / swipe / Comment THREE</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span></span>
+    </div>
+    <div class="strip" tabindex="0" aria-label="Campaign 02 carousel">
+      <figure><img src="img/c2_s1.jpg" alt="She walks into the candlelit ballroom in an ivory suit, the red clutch at her waist." loading="lazy"><figcaption><b>01</b>She arrives at the ballroom.</figcaption></figure>
+      <figure><img src="img/c2_s2.jpg" alt="The Touring Red clutch on white linen among candles, white flowers and champagne coupes." loading="lazy"><figcaption><b>02</b>The clutch on the gala table.</figcaption></figure>
+      <figure><img src="img/c2_s3.jpg" alt="She raises a champagne coupe with friends in emerald silk and champagne sequins, the clutch in her hand." loading="lazy"><figcaption><b>03</b>The toast with friends.</figcaption></figure>
+      <figure><img src="img/c2_s4.jpg" alt="She stands between the tall ballroom doors and looks at the camera, the party glowing behind her." loading="lazy"><figcaption><b>04</b>At the doors, on her own terms.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAIGN 3 -->
+<section class="chapter" id="c3" style="--c:var(--chrome)">
+  <div class="wrap">
+    <div class="ch-top">
+      <h2>No Time <em>to Change</em></h2>
+      <span class="prod"><i></i>Campaign 03 / Elina Plus / Mirrored Black Chrome</span>
+    </div>
+    <div class="ch-body">
+      <figure class="plate">
+        <img src="img/c3_static.jpg" alt="In her studio at golden hour she adjusts a white architectural model; the chrome clutch sits on the oak table." loading="lazy">
+        <figcaption><span>Monday / Static / 4:5 / Comment BUILT</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span></figcaption>
+      </figure>
+      <div class="story">
+        <p class="idea">Twenty minutes before the evening starts. She leaves her studio exactly as she is, in a white shirt and navy trousers. The chrome clutch is the only thing she adds, and it is enough.</p>
+        <dl class="facts">
+          <div><dt>Event</dt><dd>Straight from the studio to the evening</dd></div>
+          <div><dt>Keywords</dt><dd><span class="kw">BUILT</span> <span class="kw">SCHEDULE</span> <span class="kw">TWELVE</span></dd></div>
+          <div><dt>Goal</dt><dd>Consideration, then purchase intent</dd></div>
+        </dl>
+        <div class="runs"><span class="lbl">Publishes on</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span><span class="lbl">Feed, carousel and Reel, cross-posted the same day</span></div>
+        <div class="why">
+          <h4>Why it works</h4>
+          <ul>
+            <li>It speaks to the woman who makes things and has little time, the core buyer in the brand book.</li>
+            <li>Mirror chrome reflects the room around it, so every scene becomes part of the product.</li>
+            <li>The design of the clutch is engineered, and the setting says so without a single spec line.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="strip-head">
+      <h3>Wednesday carousel, <em>Twenty Minutes</em></h3>
+      <span class="runs"><span class="lbl">4 slides / swipe / Comment SCHEDULE</span><span class="chips"><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-ig"/></svg>Instagram</span><span class="chip"><svg class="ico" aria-hidden="true"><use href="#i-fb"/></svg>Facebook</span></span></span>
+    </div>
+    <div class="strip" tabindex="0" aria-label="Campaign 03 carousel">
+      <figure><img src="img/c3_s1.jpg" alt="She rolls down her shirt sleeve with the chrome clutch under her arm and smiles at the camera." loading="lazy"><figcaption><b>01</b>Sleeves down. She is ready.</figcaption></figure>
+      <figure><img src="img/c3_s2.jpg" alt="She laughs and tucks her hair behind her ear, the chrome clutch on the table beside her." loading="lazy"><figcaption><b>02</b>A last laugh at the worktable.</figcaption></figure>
+      <figure><img src="img/c3_s3.jpg" alt="Macro of a fingertip on the insect clasp, the chrome reflecting the window grid." loading="lazy"><figcaption><b>03</b>The clasp, up close.</figcaption></figure>
+      <figure><img src="img/c3_s4.jpg" alt="She looks back over her shoulder as she walks out through the steel studio door, clutch in hand." loading="lazy"><figcaption><b>04</b>Out the door, as she is.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><p class="eyebrow">Why move beyond the current feed</p><h2>From showing the clutch to living with it.</h2></div>
+      <p>The current content proves the product is beautiful. These campaigns keep that standard and add what makes a follower stay, save and write: a person, a place to go and a reason to answer.</p>
+    </div>
+    <div class="compare" role="table" aria-label="Today compared with the three campaigns">
+      <div class="h" role="columnheader">Today</div>
+      <div class="h" role="columnheader">With the three campaigns</div>
+      <div class="r old" role="cell">The clutch on its own, or in single unrelated moments.</div>
+      <div class="r new" role="cell">The same woman in every post, so people follow her from week to week.</div>
+      <div class="r old" role="cell">The product is admired from the outside.</div>
+      <div class="r new" role="cell">The product is used: a phone goes in, the clasp closes with one hand.</div>
+      <div class="r old" role="cell">No clear setting for when to wear it.</div>
+      <div class="r new" role="cell">Real occasions: a long dinner, a gala, the evening after a workday.</div>
+      <div class="r old" role="cell">Posts end at a like.</div>
+      <div class="r new" role="cell">Every caption asks for one word, and ManyChat turns it into a private conversation.</div>
+      <div class="r old" role="cell">An irregular rhythm.</div>
+      <div class="r new" role="cell">Three posts a week, one light and one look per campaign, so the grid reads like a magazine.</div>
+    </div>
+  </div>
+</section>
+
+<section id="next" class="invite">
+  <div class="wrap">
+    <h1 class="inv-h">Let's meet. <em>We can't wait to hear what you think.</em></h1>
+    <h2 class="inv-h2">Book our meeting at danna.28.olarte@gmail.com :)</h2>
+    <div class="inv-cta">
+      <span class="lbl">Schedule our meeting at</span>
+      <span class="mail" id="mail">danna.28.olarte@gmail.com</span>
+      <button class="copy" type="button" id="copy-mail">Copy email</button>
+    </div>
+    <div class="files-row"><a class="files-btn" href="https://drive.google.com/drive/folders/1Kp8gKnI-4NDfxycSucCrfr0yBT3_iS-y" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4.6l2 2h8.4A1.5 1.5 0 0 1 21 9.5v8A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Open all campaign files</a><span class="lbl">All deliverables in one shared folder</span></div>
+    <div class="contact">
+      <span class="line">WhatsApp +57 313 612 9197</span>
+      <a class="line" href="https://paguro-corp.github.io/Portfolio_Danna/">Portfolio</a>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">All campaign images are AI generated from Jeffrey Levinson packshots and directed by Pagurai Creative. Product shape, finish and hardware follow the original photographs.</div></footer>
+
+<script>
+(function(){var b=document.getElementById('copy-mail');if(!b)return;b.addEventListener('click',function(){var t='danna.28.olarte@gmail.com';function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById('mail'));var w=getSelection();w.removeAllRanges();w.addRange(r);b.textContent='Selected, press copy';}
+try{navigator.clipboard.writeText(t).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy email';},2000);},sel);}catch(e){sel();}});})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  if(!window.THREE){var f=document.createElement('div');f.className='fallback';f.textContent='The 3D view could not load.';stage.appendChild(f);return;}
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.05;
+  renderer.physicallyCorrectLights=true;
+  stage.insertBefore(renderer.domElement,stage.firstChild);
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(28,1,0.1,100);
+  camera.position.set(0,0.35,9.2);
+
+  /* studio environment for reflections: soft boxes in a dim room */
+  var env=new THREE.Scene();
+  var room=new THREE.Mesh(new THREE.BoxGeometry(30,16,30),new THREE.MeshBasicMaterial({color:0x1a1f2a,side:THREE.BackSide}));
+  env.add(room);
+  function panel(w,h,x,y,z,ry,rx,c){var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry||0;m.rotation.x=rx||0;env.add(m);}
+  panel(12,3,0,7.5,0,0,Math.PI/2,0xffffff);
+  panel(5,9,-12,1,2,Math.PI/2,0,0xf2ece2);
+  panel(4,8,12,0,-3,-Math.PI/2,0,0xbfc8d8);
+  panel(10,2,0,-1,-14,0,0,0x8a8f99);
+  panel(3,3,6,4,12,Math.PI,0,0xffe2b8);
+  var pmrem=new THREE.PMREMGenerator(renderer);
+  scene.environment=pmrem.fromScene(env,0.03).texture;
+
+  var key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(3,5,6);scene.add(key);
+  scene.add(new THREE.AmbientLight(0xffffff,0.25));
+
+  /* clutch: two domed shells meeting at a polished seam */
+  var FIN={
+    malbec:{body:{color:0x2e0510,metalness:0,roughness:0.16,clearcoat:1,clearcoatRoughness:0.05},hw:0xd8b25c,W:1.6,n:3.4,D:0.62,spec:'Elina Plus / Malbec lacquer / gold hardware / Campaign 01'},
+    red:{body:{color:0x7a0208,metalness:0,roughness:0.14,clearcoat:1,clearcoatRoughness:0.04},hw:0xe9ebee,W:1.8,n:4.6,D:0.5,spec:'Finley / Touring Red lacquer / silver hardware / Campaign 02'},
+    chrome:{body:{color:0x5e6268,metalness:1,roughness:0.07,clearcoat:0,clearcoatRoughness:0},hw:0xe9ebee,W:1.52,n:3.0,D:0.66,spec:'Elina Plus / Mirrored Black Chrome / silver hardware / Campaign 03'}
+  };
+  var group=new THREE.Group();scene.add(group);
+  var bodyMat=new THREE.MeshPhysicalMaterial(FIN.malbec.body);
+  var hwMat=new THREE.MeshStandardMaterial({color:FIN.malbec.hw,metalness:1,roughness:0.18});
+  var parts=[];
+  function sgnPow(v,p){return Math.sign(v)*Math.pow(Math.abs(v),p);}
+  function shell(W,H,D,n,front){
+    var segU=160,segV=40,pos=[],idx=[];
+    for(var j=0;j<=segV;j++){
+      var rho=j/segV;
+      for(var i=0;i<=segU;i++){
+        var t=i/segU*Math.PI*2;
+        var x=W*rho*sgnPow(Math.cos(t),2/n), y=H*rho*sgnPow(Math.sin(t),2/n);
+        var z=D*Math.pow(Math.max(0,1-Math.pow(rho,3.2)),1/3.2);
+        pos.push(x,y,front?z:-z);
+      }
+    }
+    for(var j2=0;j2<segV;j2++)for(var i2=0;i2<segU;i2++){
+      var a=j2*(segU+1)+i2,b=a+1,c=a+segU+1,d=c+1;
+      if(front){idx.push(a,c,b,b,c,d);}else{idx.push(a,b,c,b,d,c);}
+    }
+    var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return g;
+  }
+  function build(k){
+    parts.forEach(function(m){group.remove(m);m.geometry.dispose();});parts=[];
+    var f=FIN[k],W=f.W,H=1,D=f.D,n=f.n;
+    var a=new THREE.Mesh(shell(W,H,D,n,true),bodyMat),b=new THREE.Mesh(shell(W,H,D,n,false),bodyMat);
+    parts.push(a,b);
+    /* rim along the seam */
+    var pts=[];for(var i=0;i<200;i++){var t=i/200*Math.PI*2;pts.push(new THREE.Vector3(W*1.004*sgnPow(Math.cos(t),2/n),H*1.004*sgnPow(Math.sin(t),2/n),0));}
+    var rim=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),300,0.028,10,true),hwMat);parts.push(rim);
+    /* insect clasp at top center */
+    var body=new THREE.Mesh(new THREE.SphereGeometry(0.075,24,16),hwMat);body.scale.set(1,1.35,0.9);body.position.set(0,H+0.05,0.03);
+    var head=new THREE.Mesh(new THREE.SphereGeometry(0.045,20,14),hwMat);head.position.set(0,H+0.16,0.02);
+    var wl=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.016,10,30),hwMat);wl.position.set(-0.1,H+0.09,0.0);wl.scale.set(1,0.55,1);wl.rotation.z=0.5;
+    var wr=wl.clone();wr.position.x=0.1;wr.rotation.z=-0.5;
+    var drop=new THREE.Mesh(new THREE.SphereGeometry(0.05,20,14),hwMat);drop.scale.set(0.8,1.2,0.6);drop.position.set(0,H-0.06,0.09);
+    [body,head,wl,wr,drop].forEach(function(m){parts.push(m);});
+    parts.forEach(function(m){group.add(m);});
+  }
+  build('malbec');
+  group.rotation.set(0.12,-0.55,0);
+
+  function setFinish(k){
+    var f=FIN[k];
+    bodyMat.color.setHex(f.body.color);bodyMat.metalness=f.body.metalness;bodyMat.roughness=f.body.roughness;bodyMat.clearcoat=f.body.clearcoat;bodyMat.clearcoatRoughness=f.body.clearcoatRoughness;bodyMat.needsUpdate=true;
+    hwMat.color.setHex(f.hw);
+    build(k);
+    document.getElementById('spec').textContent=f.spec;
+    document.querySelectorAll('.finish').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.k===k?'true':'false');});
+  }
+  document.querySelectorAll('.finish').forEach(function(b){b.addEventListener('click',function(){setFinish(b.dataset.k);});});
+
+  /* drag to rotate, with inertia */
+  var drag=false,lx=0,ly=0,vx=0,vy=0,idle=0;
+  stage.addEventListener('pointerdown',function(e){drag=true;lx=e.clientX;ly=e.clientY;vx=vy=0;stage.setPointerCapture(e.pointerId);});
+  stage.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;vy=dx*0.008;vx=dy*0.006;group.rotation.y+=vy;group.rotation.x=Math.max(-0.9,Math.min(0.9,group.rotation.x+vx));idle=0;});
+  function up(){drag=false;}
+  stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+
+  function resize(){var w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  window.addEventListener('resize',resize);resize();
+
+  function tick(){
+    if(!drag){vx*=0.93;vy*=0.93;group.rotation.y+=vy;group.rotation.x=Math.max(-0.9,Math.min(0.9,group.rotation.x+vx));idle++;
+      if(!reduce&&idle>90)group.rotation.y+=0.0035;}
+    renderer.render(scene,camera);requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+
+</body>
+</html>
